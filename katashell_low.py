@@ -27,43 +27,58 @@ def valid_root(root_node):
     # ST --> defines variations and markup
     return True
 
-def get_cset_input(root, filepath, csets):
+def get_cset_input(root, filepath, csets, whiteIsBot, startTM):
     kata_list = []
     curr = root[0]
 
-    # set rules and load game past handicap stones
-    if root.has_property("HA"):
+    if root.has_property("HA") and curr.get_move()[0] == curr[0].get_move()[0]:
+        # Handicap exists and is played out
+        print("Handicap is played out")
         handicap = root.get("HA")
+        for i in range(handicap):
+            curr = curr[0]
     else:
+        # Handicap is not played out in sgf, or there is no handicap
+        print("Handicap is not played out")
         handicap = 0
-    print("Handicap is " + str(handicap) + " stones for Black.")
     kata_list.append(" ".join(["loadsgf", filepath, str(handicap + 1)]))
-    for i in range(handicap):
-        curr = curr[0]
-
     kata_list.append("kata-time_settings none")
 
-    # analyze after every
+    # determine what to do at each move
     alpha = 'abcdefghjklmnopqrst' #excludes 'i'
     count = 0
+    unusable = set()
+    prevTimes = {"w":startTM, "b":startTM}
+    if whiteIsBot:
+        unusable.add("w")
     while True:
         color, sgf_vertex = curr.get_move()
-        if curr.has_property("O" + color.upper()):
-            #in byo-yomi
-            break
-        kata_list.append("clear_cache")
-        kata_list.append("kata-genmove_analyze maxmoves " + str(MAXMOVES))
-        kata_list.append("undo")
-        print(curr.get(color.upper() + "L"))
-        gtp_vertex = alpha[sgf_vertex[1]] + str(sgf_vertex[0] + 1)
+        if sgf_vertex:
+            gtp_vertex = alpha[sgf_vertex[1]] + str(sgf_vertex[0] + 1)
+        else:
+            gtp_vertex = "pass"
+        print(gtp_vertex)
+        if color in unusable:
+            csets[(color, gtp_vertex)] = None
+            kata_list.append("name")
+        elif curr.has_property("O" + color.upper()):
+            csets[(color, gtp_vertex)] = None
+            kata_list.append("name")
+            unusable.add(color)
+        else:
+            newTM = curr.get(color.upper() + "L")
+            csets[(color, gtp_vertex)] = [{},prevTimes[color] - newTM]
+            prevTimes[color] = newTM
+            kata_list.append("clear_cache")
+            kata_list.append("kata-genmove_analyze maxmoves " + str(MAXMOVES))
+            kata_list.append("undo")
         kata_list.append(" ".join(["play", color, gtp_vertex]))
-        csets[(color, gtp_vertex)] = set()
 
         # advance to next move
-        if len(curr) == 0:
+        if len(curr) == 0 or len(unusable) == 2:
             break
-        if count == 2:
-            break
+        # if count == 2:
+        #     break
         curr = curr[0]
         count += 1
 
@@ -75,27 +90,29 @@ def get_analysis_input(root, filepath, csets):
     kata_list = []
     curr = root[0]
 
-    # set rules and load game past handicap stones
-    if root.has_property("HA"):
+    if root.has_property("HA") and curr.get_move()[0] == curr[0].get_move()[0]:
+        # Handicap exists and is played out
+        print("Handicap is played out")
         handicap = root.get("HA")
+        for i in range(handicap):
+            curr = curr[0]
     else:
+        # Handicap is not played out in sgf, or there is no handicap
+        print("Handicap is not played out")
         handicap = 0
-    print("Handicap is " + str(handicap) + " stones for Black.")
     kata_list.append(" ".join(["loadsgf", filepath, str(handicap + 1)]))
-    for i in range(handicap):
-        curr = curr[0]
-
     kata_list.append("kata-time_settings none")
 
     # analyze after every
     for actual_move in csets:
         color, actual_gtp_vertex = actual_move
-        for cmove in csets[actual_move]:
-            kata_list.append("play " + color + " " + cmove)
-            kata_list.append("clear_cache")
-            kata_list.append("kata-genmove_analyze maxmoves 1")
-            kata_list.append("undo") #undo the genmove
-            kata_list.append("undo") #undo the play
+        if csets[actual_move]:
+            for cmove in csets[actual_move][0]:
+                kata_list.append("play " + color + " " + cmove)
+                kata_list.append("clear_cache")
+                kata_list.append("kata-genmove_analyze maxmoves 1")
+                kata_list.append("undo") #undo the genmove
+                kata_list.append("undo") #undo the play
         kata_list.append("play " + color + " " + actual_gtp_vertex)
 
     # return
@@ -121,17 +138,26 @@ def runkata(kata_input, cfg_file, output_file):
         proc.communicate(kata_input)
 
 def update_csets(csets, file):
+    for item in csets:
+        print(str(item) + " " + str(csets[item]))
     for move in csets:
-        line = file.readline()
-        while "info" not in line:
+        print(move)
+        while True:
             line = file.readline()
-        csets[move].update(line[m.end()+1:v.start()-1] for m, v in zip(re.finditer('move', line), re.finditer('visits', line)))
-        print(csets[move])
+            if "info" in line:
+                for m, v in zip(re.finditer('move', line), re.finditer('visits', line)):
+                    csets[move][0][line[m.end()+1:v.start()-1]] = None
+                break
+            elif "KataGo" in line:
+                break
+    for item in csets:
+        print(str(item) + " " + str(csets[item]))
 
 def main():
     csets = {}
     #filepath = "./GoGames/201803/201831petgo3-luancaius.sgf"
-    filepath = "./GoGames/201803/201831petgo3-Maxime-2.sgf"
+    filepath = "../GoGames/201803/201831petgo3-Maxime-2.sgf"
+    #filepath = "../GoGames/202110/2021101gomancer-S08310220-3.sgf"
     print("Loading file " + filepath)
 
     root_node = from_filepath_get_root(filepath)
@@ -139,9 +165,11 @@ def main():
         print("Quitting. Not a valid root.")
         return
     print("Root is valid.")
+    
+    startTM = root_node.get("TM")
 
     # input for generating cset
-    cset_input = get_cset_input(root_node, filepath, csets)
+    cset_input = get_cset_input(root_node, filepath, csets, True, startTM)
     print("\n" + "INPUT TO KATAGO (CSETS):\n" + cset_input + "\n")
 
     # low config

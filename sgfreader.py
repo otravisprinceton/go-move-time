@@ -72,9 +72,30 @@ def countTimingTypes():
                     timing_systems[timing_system] = 1
         printDict(timing_systems)
 
+def findType():
+    pathname = '../GoGames'
+    for directory in os.listdir(pathname):
+        directorypath = os.path.join(pathname, directory)
+        for filename in os.listdir(directorypath):
+            filepath = os.path.join(directorypath, filename)
+            if os.path.isfile(filepath):
+                with open(filepath, "rb") as f:
+                    try:
+                        game = sgf.Sgf_game.from_bytes(f.read())
+                    except:
+                        print(filepath)
+                root_node = game.get_root()
+                try:
+                    handicap = root_node.get("HA")
+                except:
+                    handicap = "NONE"
+                if handicap==2:
+                    print(filepath)
+
 def main():
     #removeGames()
-    countTimingTypes()
+    #countTimingTypes()
+    findType()
 
 if __name__ == "__main__":
     main()
