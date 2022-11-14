@@ -197,7 +197,7 @@ def get_analysis_input(root, filepath, csets):
 
 def runkata(kata_input, cfg_file, output_file):
     cmd = []
-    cmd.append("katago")
+    cmd.append("/home/otravis/software/KataGoEigen/katago")
     cmd.append("gtp")
     cmd.append("-model")
     cmd.append(MODEL)
