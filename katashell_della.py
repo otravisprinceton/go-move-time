@@ -1,7 +1,6 @@
 from sgfmill import sgf
 import subprocess
 import re
-import pandas as pd
 
 #------------------------------
 # GLOBALS
