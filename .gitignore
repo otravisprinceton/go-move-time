@@ -1,2 +1,8 @@
+# Annoying logs (eliminate entirely?)
 /gtp_logs
-/test_sgf
+
+# Side effects
+*-done.txt
+*-highset.txt
+*-lowset.txt
+*-voc.txt
