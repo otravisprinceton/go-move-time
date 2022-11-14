@@ -7,9 +7,19 @@ import pandas as pd
 # GLOBALS
 #------------------------------
 MAXMOVES = 3
-LOW_CFG_FILE = "./gtp_low.cfg"
-HIGH_CFG_FILE = "./gtp_high.cfg"
-MODEL = "/usr/local/Cellar/katago/1.11.0/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
+
+# Local
+# MODEL = "/usr/local/Cellar/katago/1.11.0/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
+# LOW_CFG_FILE = "./gtp_low.cfg"
+# HIGH_CFG_FILE = "./gtp_high.cfg"
+
+#Della
+#MODEL = "/home/otravis/software/g170e-b20c256x2-s5303129600-d1228401921.bin.gz" #20
+MODEL = "/home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz" #30
+#MODEL = "/home/otravis/software/g170-b40c256x2-s5095420928-d1229425124.bin.gz" #40
+LOW_CFG_FILE = "/home/otravis/go-move-time/gtp_low.cfg"
+HIGH_CFG_FILE = "/home/otravis/go-move-time/gtp_high.cfg"
+
 ALPHA = 'abcdefghjklmnopqrst' #excludes 'i'
 
 BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
