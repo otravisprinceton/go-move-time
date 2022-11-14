@@ -293,7 +293,7 @@ def findBots(root_node):
 
 def main():
     csets = []
-    filepath = "./test_sgf/byoyomi-nH.sgf"
+    filepath = "./test_sgf/byoyomi-NH.sgf"
     #filepath = "./test_sgf/canadian1.sgf"
     #filepath = "../GoGames/201803/201831petgo3-luancaius.sgf"
     #filepath = "../GoGames/201803/201831petgo3-Maxime-2.sgf"
