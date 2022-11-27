@@ -1,24 +1,31 @@
 from sgfmill import sgf
 import subprocess
 import re
+import os
 
 #------------------------------
 # GLOBALS
 #------------------------------
-MAXMOVES = 3
+NUMJOBS = 2000
 
+#------------------------------
 # Local
+# KATAGO = "katago"
 # MODEL = "/usr/local/Cellar/katago/1.11.0/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
 # LOW_CFG_FILE = "./gtp_low.cfg"
 # HIGH_CFG_FILE = "./gtp_high.cfg"
 
-#Della
+# Della
+KATAGO = "/home/otravis/software/KataGoEigen/katago"
 #MODEL = "/home/otravis/software/g170e-b20c256x2-s5303129600-d1228401921.bin.gz" #20
 MODEL = "/home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz" #30
 #MODEL = "/home/otravis/software/g170-b40c256x2-s5095420928-d1229425124.bin.gz" #40
 LOW_CFG_FILE = "/home/otravis/go-move-time/gtp_low.cfg"
 HIGH_CFG_FILE = "/home/otravis/go-move-time/gtp_high.cfg"
+#------------------------------
 
+
+MAXMOVES = 3
 ALPHA = 'abcdefghjklmnopqrst' #excludes 'i'
 
 BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
@@ -197,7 +204,7 @@ def get_analysis_input(root, filepath, csets):
 
 def runkata(kata_input, cfg_file, output_file):
     cmd = []
-    cmd.append("/home/otravis/software/KataGoEigen/katago")
+    cmd.append(KATAGO)
     cmd.append("gtp")
     cmd.append("-model")
     cmd.append(MODEL)
@@ -291,14 +298,9 @@ def findBots(root_node):
 
     return whiteIsBot, blackIsBot
 
-def main():
+def main_helper(filename, data_folder):
+    filepath = os.path.join(data_folder, filename)
     csets = []
-    filepath = "./test_sgf/byoyomi-NH.sgf"
-    #filepath = "./test_sgf/canadian1.sgf"
-    #filepath = "../GoGames/201803/201831petgo3-luancaius.sgf"
-    #filepath = "../GoGames/201803/201831petgo3-Maxime-2.sgf"
-    #filepath = "../GoGames/202110/2021101gomancer-S08310220-3.sgf"
-    #filepath = "./test_sgf/byoyomi-HA5NP-pass.sgf"
     print("Loading file " + filepath)
 
     root_node = from_filepath_get_root(filepath)
@@ -328,10 +330,9 @@ def main():
     # for move in csets:
     #     print(" ".join([str(move.num), move.color, move.gtp_vertex, str(move.time_left), str(move.analyzed), str(move.in_overtime)]))
 
-
     # low config
     print("Generating consideration set at low config\n")
-    low_output_filepath = filepath[:-4] + "-lowset.txt"
+    low_output_filepath = data_folder[:-7] + "Output/" + filename[:-4] + "-lowset.txt"
     with open(low_output_filepath, "w+") as low_output:
         runkata(cset_input, LOW_CFG_FILE, low_output)
     print("Saved output to " + low_output_filepath)
@@ -340,7 +341,7 @@ def main():
     
     # high config
     print("Generating consideration set at high config\n")
-    high_output_filepath = filepath[:-4] + "-highset.txt"
+    high_output_filepath = data_folder[:-7] + "Output/" + filename[:-4] + "-highset.txt"
     with open(high_output_filepath, "w+") as high_output:
         runkata(cset_input, HIGH_CFG_FILE, high_output)
     print("Saved output to " + high_output_filepath)
@@ -351,16 +352,45 @@ def main():
     analysis_input = get_analysis_input(root_node, filepath, csets)
     print("\n" + "INPUT TO KATAGO (ANALYSIS):\n" + analysis_input + "\n")
     
-    voc_output_filepath = filepath[:-4] + "-voc.txt"
+    voc_output_filepath = data_folder[:-7] + "Output/" + filename[:-4] + "-voc.txt"
     with open(voc_output_filepath, "w+") as voc_output:
         runkata(analysis_input, HIGH_CFG_FILE, voc_output)
     print("Saved output to " + voc_output_filepath)
     with open(voc_output_filepath, "r") as voc_output:
         update_vocs(csets, voc_output)
 
-    final_output_filepath = filepath[:-4] + "-done.txt"
+    final_output_filepath = data_folder[:-7] + "Output/" + filename[:-4] + + "-done.txt"
     with open(final_output_filepath, "w+") as final_output:
         save_final(root_node, csets, final_output)
+
+def main():
+    is_array_job = True
+    on_cluster = True
+
+    if is_array_job:
+        job_idx = int(os.environ["SLURM_ARRAY_TASK_ID"]) - 1
+    else:
+        job_idx = -1
+
+    if on_cluster:
+        data_folder = '/scratch/gpfs/otravis/GoGames'
+    else:
+        data_folder = '/Users/owentravis/Documents/IW/GoGames'
+
+    with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
+        filenames = gamesList.readlines()
+
+    # for i in range(len(filenames)):
+    #     if i % NUMJOBS == job_idx or job_idx == -1:
+    #         main_helper(filenames[i].strip(), data_folder)
+
+    #filepath = "./test_sgf/byoyomi-NH.sgf"
+    #filepath = "./test_sgf/canadian1.sgf"
+    #filepath = "../GoGames/201803/201831petgo3-luancaius.sgf"
+    #filepath = "../GoGames/201803/201831petgo3-Maxime-2.sgf"
+    #filepath = "../GoGames/202110/2021101gomancer-S08310220-3.sgf"
+    #filepath = "./test_sgf/byoyomi-HA5NP-pass.sgf"
+    main_helper(filenames[3].strip(), data_folder)
 
 if __name__ == "__main__":
     main()

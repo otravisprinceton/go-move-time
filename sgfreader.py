@@ -151,14 +151,30 @@ def countPlayers():
     for k, v in sorted(players.items(), key=lambda item: item[1], reverse=True):
         if v > 300:
             print(k + ": " + str(v))
-                    
+
+def makeGameList():
+    pathname = '../GoGames'
+    with open("./gamesList.txt", "w+") as outputFile:
+        for directory in os.listdir(pathname):
+            directorypath = os.path.join(pathname, directory)
+            for filename in os.listdir(directorypath):
+                filepath = os.path.join(directorypath, filename)
+                if os.path.isfile(filepath):
+                    with open(filepath, "rb") as f:
+                        try:
+                            game = sgf.Sgf_game.from_bytes(f.read())
+                            outputFile.write(os.path.join(directory, filename) + "\n")
+                        except:
+                            print(filepath)
+
 
 def main():
     #removeGames()
     #countOTTypes()
     #findType()
     #countPlayers()
-    removeNonSGF()
+    #removeNonSGF()
+    makeGameList()
 
 
 if __name__ == "__main__":
