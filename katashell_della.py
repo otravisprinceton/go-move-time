@@ -156,8 +156,8 @@ def get_cset_input(root, filepath, csets, whiteIsBot, blackIsBot, startTM, ot):
         # advance to next move
         if len(curr) == 0 or len(unusable) == 2:
             break
-        if count == 3:
-            break
+        # if count == 3:
+        #     break
         curr = curr[0]
         count += 1
 
