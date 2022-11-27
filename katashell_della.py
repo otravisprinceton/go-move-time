@@ -364,7 +364,7 @@ def main_helper(filename, data_folder):
         save_final(root_node, csets, final_output)
 
 def main():
-    is_array_job = True
+    is_array_job = False
     on_cluster = True
 
     if is_array_job:
