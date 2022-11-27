@@ -1,0 +1,68 @@
+(kata-env) [otravis@della8 KataGoEigen]$ ./katago benchmark -model /home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz -config /home/otravis/go-move-time/gtp_high.cfg
+2022-11-27 17:40:31-0500: Loading model and initializing benchmark...
+2022-11-27 17:40:31-0500: Testing with default positions for board size: 19
+2022-11-27 17:40:31-0500: nnRandSeed0 = 7673594602523416830
+2022-11-27 17:40:31-0500: After dedups: nnModelFile0 = /home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz useFP16 auto useNHWC auto
+2022-11-27 17:40:31-0500: Initializing neural net buffer to be size 19 * 19 exactly
+2022-11-27 17:40:34-0500: Eigen (CPU) backend thread 0: Model version 8
+2022-11-27 17:40:34-0500: Eigen (CPU) backend thread 1: Model version 8
+2022-11-27 17:40:34-0500: Eigen (CPU) backend thread 0: Model name: g170-b30c320x2-s4824661760-d1229536699
+2022-11-27 17:40:34-0500: Eigen (CPU) backend thread 1: Model name: g170-b30c320x2-s4824661760-d1229536699
+
+2022-11-27 17:40:36-0500: Loaded config /home/otravis/go-move-time/gtp_high.cfg
+2022-11-27 17:40:36-0500: Loaded model /home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz
+
+Testing using 80 visits.
+  If you have a good GPU, you might increase this using "-visits N" to get more accurate results.
+  If you have a weak GPU and this is taking forever, you can decrease it instead to finish the benchmark faster.
+
+You are currently using the Eigen (CPU) version of KataGo. Due to having no GPU, it may be slow.
+
+Your GTP config is currently set to use numSearchThreads = 6
+Automatically trying different numbers of threads to home in on the best (board size 19x19): 
+
+2022-11-27 17:40:36-0500: GPU -1 finishing, processed 2 rows 2 batches
+2022-11-27 17:40:36-0500: GPU -1 finishing, processed 3 rows 3 batches
+2022-11-27 17:40:36-0500: nnRandSeed0 = 6404463377756710752
+2022-11-27 17:40:36-0500: After dedups: nnModelFile0 = /home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz useFP16 auto useNHWC auto
+2022-11-27 17:40:36-0500: Initializing neural net buffer to be size 19 * 19 exactly
+2022-11-27 17:40:39-0500: Eigen (CPU) backend thread 0: Model version 8
+2022-11-27 17:40:39-0500: Eigen (CPU) backend thread 0: Model name: g170-b30c320x2-s4824661760-d1229536699
+2022-11-27 17:40:39-0500: Eigen (CPU) backend thread 1: Model version 8
+2022-11-27 17:40:39-0500: Eigen (CPU) backend thread 1: Model name: g170-b30c320x2-s4824661760-d1229536699
+
+
+Possible numbers of threads to test: 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 
+
+numSearchThreads =  5: 10 / 10 positions, visits/s = 9.84 nnEvals/s = 9.53 nnBatches/s = 7.28 avgBatchSize = 1.31 (85.3 secs)
+numSearchThreads = 12: 10 / 10 positions, visits/s = 12.66 nnEvals/s = 12.65 nnBatches/s = 7.38 avgBatchSize = 1.71 (71.8 secs)
+numSearchThreads = 10: 10 / 10 positions, visits/s = 15.52 nnEvals/s = 15.26 nnBatches/s = 10.57 avgBatchSize = 1.44 (57.3 secs)
+numSearchThreads = 20: 10 / 10 positions, visits/s = 7.47 nnEvals/s = 7.50 nnBatches/s = 2.65 avgBatchSize = 2.83 (131.5 secs)
+numSearchThreads =  8: 10 / 10 positions, visits/s = 13.97 nnEvals/s = 13.79 nnBatches/s = 10.21 avgBatchSize = 1.35 (62.3 secs)
+numSearchThreads =  6: 10 / 10 positions, visits/s = 12.44 nnEvals/s = 12.19 nnBatches/s = 10.37 avgBatchSize = 1.17 (68.3 secs)
+
+
+Ordered summary of results: 
+
+numSearchThreads =  5: 10 / 10 positions, visits/s = 9.84 nnEvals/s = 9.53 nnBatches/s = 7.28 avgBatchSize = 1.31 (85.3 secs) (EloDiff baseline)
+numSearchThreads =  6: 10 / 10 positions, visits/s = 12.44 nnEvals/s = 12.19 nnBatches/s = 10.37 avgBatchSize = 1.17 (68.3 secs) (EloDiff +73)
+numSearchThreads =  8: 10 / 10 positions, visits/s = 13.97 nnEvals/s = 13.79 nnBatches/s = 10.21 avgBatchSize = 1.35 (62.3 secs) (EloDiff +92)
+numSearchThreads = 10: 10 / 10 positions, visits/s = 15.52 nnEvals/s = 15.26 nnBatches/s = 10.57 avgBatchSize = 1.44 (57.3 secs) (EloDiff +108)
+numSearchThreads = 12: 10 / 10 positions, visits/s = 12.66 nnEvals/s = 12.65 nnBatches/s = 7.38 avgBatchSize = 1.71 (71.8 secs) (EloDiff +9)
+numSearchThreads = 20: 10 / 10 positions, visits/s = 7.47 nnEvals/s = 7.50 nnBatches/s = 2.65 avgBatchSize = 2.83 (131.5 secs) (EloDiff -282)
+
+
+Based on some test data, each speed doubling gains perhaps ~250 Elo by searching deeper.
+Based on some test data, each thread costs perhaps 7 Elo if using 800 visits, and 2 Elo if using 5000 visits (by making MCTS worse).
+So APPROXIMATELY based on this benchmark, if you intend to do a 5 second search: 
+numSearchThreads =  5: (baseline)
+numSearchThreads =  6:   +73 Elo
+numSearchThreads =  8:   +92 Elo
+numSearchThreads = 10:  +108 Elo (recommended)
+numSearchThreads = 12:    +9 Elo
+numSearchThreads = 20:  -282 Elo
+
+If you care about performance, you may want to edit numSearchThreads in /home/otravis/go-move-time/gtp_high.cfg based on the above results!
+If you intend to do much longer searches, configure the seconds per game move you expect with the '-time' flag and benchmark again.
+If you intend to do short or fixed-visit searches, use lower numSearchThreads for better strength, high threads will weaken strength.
+If interested see also other notes about performance and mem usage in the top of /home/otravis/go-move-time/gtp_high.cfg
