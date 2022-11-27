@@ -364,7 +364,7 @@ def main_helper(filename, data_folder):
         save_final(root_node, csets, final_output)
 
 def main():
-    is_array_job = False
+    is_array_job = True
     on_cluster = True
 
     if is_array_job:
@@ -380,17 +380,17 @@ def main():
     with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
         filenames = gamesList.readlines()
 
-    # for i in range(len(filenames)):
-    #     if i % NUMJOBS == job_idx or job_idx == -1:
-    #         main_helper(filenames[i].strip(), data_folder)
-
     #filepath = "./test_sgf/byoyomi-NH.sgf"
     #filepath = "./test_sgf/canadian1.sgf"
     #filepath = "../GoGames/201803/201831petgo3-luancaius.sgf"
     #filepath = "../GoGames/201803/201831petgo3-Maxime-2.sgf"
     #filepath = "../GoGames/202110/2021101gomancer-S08310220-3.sgf"
     #filepath = "./test_sgf/byoyomi-HA5NP-pass.sgf"
-    main_helper(filenames[3].strip(), data_folder)
+    # main_helper(filenames[3].strip(), data_folder)
+
+    for i in range(len(filenames)):
+        if i % NUMJOBS == job_idx or job_idx == -1:
+            main_helper(filenames[i].strip(), data_folder)
 
 if __name__ == "__main__":
     main()
