@@ -359,7 +359,7 @@ def main_helper(filename, data_folder):
     with open(voc_output_filepath, "r") as voc_output:
         update_vocs(csets, voc_output)
 
-    final_output_filepath = data_folder[:-7] + "Output/" + filename[:-4] + + "-done.txt"
+    final_output_filepath = data_folder[:-7] + "Output/" + filename[:-4] + "-done.txt"
     with open(final_output_filepath, "w+") as final_output:
         save_final(root_node, csets, final_output)
 
