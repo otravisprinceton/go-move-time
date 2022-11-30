@@ -256,7 +256,7 @@ def update_vocs(csets, file):
         if move.analyzed:
             for cmove in move.cset:
                 loopCount = 0
-                while True and loopCount < 20:
+                while True and loopCount < 100:
                     loopCount += 1
                     line = file.readline()
                     if "info" in line:
@@ -268,7 +268,7 @@ def update_vocs(csets, file):
                         move.cset[cmove].append(line[w.end()+1:s.start()-1])
                         move.cset[cmove].append(line[s.end()+1:d.start()-1])
                         break
-                if loopCount >= 20:
+                if loopCount >= 100:
                     raise Exception("Error: Infinite loop in update_vocs")
 
 def save_final(root_node, csets, file):

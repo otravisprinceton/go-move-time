@@ -10,18 +10,18 @@ NUMJOBS = 300
 
 #------------------------------
 # Local
-# KATAGO = "katago"
-# MODEL = "/usr/local/Cellar/katago/1.11.0/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
-# LOW_CFG_FILE = "./gtp_low.cfg"
-# HIGH_CFG_FILE = "./gtp_high.cfg"
+KATAGO = "katago"
+MODEL = "/usr/local/Cellar/katago/1.11.0/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
+LOW_CFG_FILE = "./gtp_low.cfg"
+HIGH_CFG_FILE = "./gtp_low.cfg"
 
 # Della
-KATAGO = "/home/otravis/software/KataGoOpenCL/katago"
+#KATAGO = "/home/otravis/software/KataGoOpenCL/katago"
 #MODEL = "/home/otravis/software/g170e-b20c256x2-s5303129600-d1228401921.bin.gz" #20
-MODEL = "/home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz" #30
+#MODEL = "/home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz" #30
 #MODEL = "/home/otravis/software/g170-b40c256x2-s5095420928-d1229425124.bin.gz" #40
-LOW_CFG_FILE = "/home/otravis/go-move-time/gtp_low.cfg"
-HIGH_CFG_FILE = "/home/otravis/go-move-time/gtp_high.cfg"
+#LOW_CFG_FILE = "/home/otravis/go-move-time/gtp_low.cfg"
+#HIGH_CFG_FILE = "/home/otravis/go-move-time/gtp_high.cfg"
 #------------------------------
 
 
@@ -259,9 +259,10 @@ def update_vocs(csets, file):
                 count += 1
                 print(count)
                 loopCount = 0
-                while True and loopCount < 20:
+                while True and loopCount < 100:
                     loopCount += 1
                     line = file.readline()
+                    print("Reading:" + line)
                     if "info" in line:
                         u = re.search('utility', line)
                         w = re.search('winrate', line)
@@ -272,6 +273,9 @@ def update_vocs(csets, file):
                         move.cset[cmove].append(line[s.end()+1:d.start()-1])
                         break
                 if loopCount >= 20:
+                    for move in csets:
+                        print(move.gtp_vertex)
+                        print(move.cset)
                     raise Exception("Error: Infinite loop in update_vocs")
 
 def save_final(root_node, csets, file):
@@ -342,6 +346,10 @@ def main_helper(filename):
     print("Saved output to " + low_output_filepath)
     with open(low_output_filepath, "r") as low_output:
         update_csets_low(csets, low_output)
+
+    for move in csets:
+        print(move.gtp_vertex)
+        print(move.cset)
     
     # high config
     print("Generating consideration set at high config\n")
@@ -351,6 +359,10 @@ def main_helper(filename):
     print("Saved output to " + high_output_filepath)
     with open(high_output_filepath, "r") as high_output:
         update_csets_high(csets, high_output)
+
+    for move in csets:
+        print(move.gtp_vertex)
+        print(move.cset)
 
     # input for analyzing each move in cset
     analysis_input = get_analysis_input(root_node, filepath, csets)
@@ -395,7 +407,7 @@ def main():
     # for i in range(len(filenames)):
     #     if i % NUMJOBS == job_idx or job_idx == -1:
     #         main_helper(filenames[i].strip(), data_folder)
-    main_helper("/scratch/gpfs/otravis/GoGames/201907/2019714geomancer2-petgo-4.sgf")
+    main_helper("/Users/owentravis/Documents/IW/GoGames/201907/2019714geomancer2-petgo-4.sgf")
 
 if __name__ == "__main__":
     main()
