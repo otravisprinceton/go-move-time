@@ -8,7 +8,7 @@
 #SBATCH --mem=4G                 # memory (4G per core)
 #SBATCH --gres=gpu:1             # number of gpus per node
 #SBATCH --time=022:00:00         # total run time limit (HH:MM:SS)
-#SBATCH --array=1-2000           # job array with index values 0, 1, 2, 3, 4
+#SBATCH --array=1-300            # job array with index values 0, 1, 2, 3, 4
 #SBATCH --mail-type=all          # send email on job start, end and fault
 #SBATCH --mail-user=otravis@princeton.edu
 
