@@ -72,6 +72,12 @@ def valid_root(root_node):
     if root_node.get("GM") != 1:
         print("not go")
         return False
+    if len(root_node) == 0:
+        print("no moves were made")
+        return False
+    if len(root_node[0]) == 0:
+        print("only one move was made")
+        return False
     # other checks here?
     # FF --> version of sgf (e.g. 4)
     # CA --> character set (e.g. UTF-8)
@@ -92,7 +98,10 @@ def get_cset_input(root, filepath, csets, whiteIsBot, blackIsBot, startTM, ot):
     count = 1
 
     # track which colors can be analyzed
-    if ot.endswith("byo-yomi"):
+    if ot == "":
+        print("No overtime, isByoYomi = False")
+        isByoYomi = False
+    elif ot.endswith("byo-yomi"):
         print("isByoYomi = True")
         isByoYomi = True
     else:
@@ -323,7 +332,11 @@ def main_helper(filename):
     
     startTM = root_node.get("TM")
 
-    ot = root_node.get("OT")
+    if root_node.has_property("OT"):
+        ot = root_node.get("OT")
+    else:
+        ot = ""
+
 
     whiteIsBot, blackIsBot = findBots(root_node)
     if whiteIsBot and blackIsBot:
@@ -407,7 +420,7 @@ def main():
     # for i in range(len(filenames)):
     #     if i % NUMJOBS == job_idx or job_idx == -1:
     #         main_helper(filenames[i].strip(), data_folder)
-    main_helper("/Users/owentravis/Documents/IW/GoGames/201907/2019714geomancer2-petgo-4.sgf")
+    main_helper("/Users/owentravis/Documents/IW/GoGames/201309/2013914cloudnotes-roln111.sgf")
 
 if __name__ == "__main__":
     main()

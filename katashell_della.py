@@ -72,6 +72,13 @@ def valid_root(root_node):
     if root_node.get("GM") != 1:
         print("not go")
         return False
+    if len(root_node) == 0:
+        print("no moves were made")
+        return False
+    if len(root_node[0]) == 0:
+        print("only one move was made")
+        return False
+
     # other checks here?
     # FF --> version of sgf (e.g. 4)
     # CA --> character set (e.g. UTF-8)
@@ -92,7 +99,10 @@ def get_cset_input(root, filepath, csets, whiteIsBot, blackIsBot, startTM, ot):
     count = 1
 
     # track which colors can be analyzed
-    if ot.endswith("byo-yomi"):
+    if ot == "":
+        print("No overtime, isByoYomi = False")
+        isByoYomi = False
+    elif ot.endswith("byo-yomi"):
         print("isByoYomi = True")
         isByoYomi = True
     else:
@@ -316,7 +326,10 @@ def main_helper(filename, data_folder):
     
     startTM = root_node.get("TM")
 
-    ot = root_node.get("OT")
+    if root_node.has_property("OT"):
+        ot = root_node.get("OT")
+    else:
+        ot = ""
 
     whiteIsBot, blackIsBot = findBots(root_node)
     if whiteIsBot and blackIsBot:
