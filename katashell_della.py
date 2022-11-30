@@ -345,7 +345,7 @@ def main_helper(filename, data_folder):
 
     # low config
     print("Generating consideration set at low config\n")
-    low_output_filepath = data_folder[:-7] + "OutputCL/" + filename[:-4] + "-lowset.txt"
+    low_output_filepath = data_folder[:-7] + "OutputCL-1/" + filename[:-4] + "-lowset.txt"
     with open(low_output_filepath, "w+") as low_output:
         runkata(cset_input, LOW_CFG_FILE, low_output)
     print("Saved output to " + low_output_filepath)
@@ -354,7 +354,7 @@ def main_helper(filename, data_folder):
     
     # high config
     print("Generating consideration set at high config\n")
-    high_output_filepath = data_folder[:-7] + "OutputCL/" + filename[:-4] + "-highset.txt"
+    high_output_filepath = data_folder[:-7] + "OutputCL-1/" + filename[:-4] + "-highset.txt"
     with open(high_output_filepath, "w+") as high_output:
         runkata(cset_input, HIGH_CFG_FILE, high_output)
     print("Saved output to " + high_output_filepath)
@@ -365,14 +365,14 @@ def main_helper(filename, data_folder):
     analysis_input = get_analysis_input(root_node, filepath, csets)
     print("\n" + "INPUT TO KATAGO (ANALYSIS):\n" + analysis_input + "\n")
     
-    voc_output_filepath = data_folder[:-7] + "OutputCL/" + filename[:-4] + "-voc.txt"
+    voc_output_filepath = data_folder[:-7] + "OutputCL-1/" + filename[:-4] + "-voc.txt"
     with open(voc_output_filepath, "w+") as voc_output:
         runkata(analysis_input, HIGH_CFG_FILE, voc_output)
     print("Saved output to " + voc_output_filepath)
     with open(voc_output_filepath, "r") as voc_output:
         update_vocs(csets, voc_output)
 
-    final_output_filepath = data_folder[:-7] + "OutputCL/" + filename[:-4] + "-done.txt"
+    final_output_filepath = data_folder[:-7] + "OutputCL-1/" + filename[:-4] + "-done.txt"
     with open(final_output_filepath, "w+") as final_output:
         save_final(root_node, csets, final_output)
 
