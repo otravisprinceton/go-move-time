@@ -252,6 +252,7 @@ def update_csets_high(csets, file):
         prevLine = line
 
 def update_vocs(csets, file):
+    count = 0
     for move in csets:
         if move.analyzed:
             for cmove in move.cset:
