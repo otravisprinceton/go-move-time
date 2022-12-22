@@ -390,7 +390,7 @@ def main():
     else:
         data_folder = '/Users/owentravis/Documents/IW/GoGames'
 
-    with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
+    with open(os.path.join(data_folder, "gamesListNew.txt"), "r") as gamesList:
         filenames = gamesList.readlines()
 
     #filepath = "./test_sgf/byoyomi-NH.sgf"
