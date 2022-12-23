@@ -70,19 +70,30 @@ def countTimingTypes():
                     timing_systems[timing_system] = 1
         printDict(timing_systems)
 
-def removeNonSGF():
-    pathname = '../GoGames'
+def removeNonDone():
+    pathname = '/Users/owentravis/Documents/IW/OutputCL-1'
+    count = 0
     for directory in os.listdir(pathname):
         directorypath = os.path.join(pathname, directory)
         for filename in os.listdir(directorypath):
-            filepath = os.path.join(directorypath, filename)
-            if os.path.isfile(filepath):
-                with open(filepath, "rb") as f:
-                    try:
-                        _ = sgf.Sgf_game.from_bytes(f.read())
-                    except:
-                        print(filepath)
-                        os.remove(filepath)
+            if not filename.endswith("done.txt"):
+                filepath = os.path.join(directorypath, filename)
+                print("Removing: " + filepath)
+                os.remove(filepath)
+
+def cleanGamesList():
+    done = set()
+    pathname = '/Users/owentravis/Documents/IW/OutputCL-1'
+    for directory in os.listdir(pathname):
+        directorypath = os.path.join(pathname, directory)
+        for filename in os.listdir(directorypath):
+            done.add(directory + "/" + filename[:-9] + ".sgf")
+    print(len(done))
+    # with open("/Users/owentravis/Documents/IW/GoGames/gamesList.txt", "r") as oldList:
+    #     with open("/Users/owentravis/Documents/IW/GoGames/gamesListNew.txt", "w+") as newList:
+    #         for line in oldList:
+    #             if line.strip() not in done:
+    #                 newList.write(line.strip() + "\n")
 
 def countOTTypes():
     ot_types = set()
@@ -169,12 +180,7 @@ def makeGameList():
 
 
 def main():
-    #removeGames()
-    #countOTTypes()
-    #findType()
-    #countPlayers()
-    #removeNonSGF()
-    makeGameList()
+    cleanGamesList()
 
 
 if __name__ == "__main__":
