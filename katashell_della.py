@@ -90,7 +90,10 @@ def get_cset_input(root, filepath, csets, whiteIsBot, blackIsBot, startTM, ot):
     kata_list = []
     curr = root[0]
 
-    handicap, curr = handle_handicap(root, curr)
+    try:
+        handicap, curr = handle_handicap(root, curr)
+    except Exception:
+        return False
 
     kata_list.append(" ".join(["loadsgf", filepath, str(handicap + 1)]))
     kata_list.append("kata-time_settings none")
@@ -338,6 +341,10 @@ def main_helper(filename, data_folder):
 
     # input for generating cset
     cset_input = get_cset_input(root_node, filepath, csets, whiteIsBot, blackIsBot, startTM, ot)
+    if not cset_input:
+        print(filepath + " is bad file.")
+        return
+
     print("\n" + "INPUT TO KATAGO (CSETS):\n" + cset_input + "\n")
 
     # for move in csets:
