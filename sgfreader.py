@@ -164,8 +164,8 @@ def countPlayers():
             print(k + ": " + str(v))
 
 def makeGameList():
-    pathname = '../GoGames'
-    with open("./gamesList.txt", "w+") as outputFile:
+    pathname = '/Users/owentravis/Downloads/AlphaGoSelfPlay'
+    with open("/Users/owentravis/Downloads/agGamesList.txt", "x") as outputFile:
         for directory in os.listdir(pathname):
             directorypath = os.path.join(pathname, directory)
             for filename in os.listdir(directorypath):
@@ -180,7 +180,7 @@ def makeGameList():
 
 
 def main():
-    cleanGamesList()
+    makeGameList()
 
 
 if __name__ == "__main__":
