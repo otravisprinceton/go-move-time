@@ -89,11 +89,11 @@ def cleanGamesList():
         for filename in os.listdir(directorypath):
             done.add(directory + "/" + filename[:-9] + ".sgf")
     print(len(done))
-    with open("/Users/owentravis/Documents/IW/GoGames/gamesList.txt", "r") as oldList:
-        with open("/Users/owentravis/Documents/IW/GoGames/gamesListNew.txt", "w+") as newList:
-            for line in oldList:
-                if line.strip() not in done:
-                    newList.write(line.strip() + "\n")
+    # with open("/Users/owentravis/Documents/IW/GoGames/gamesList.txt", "r") as oldList:
+    #     with open("/Users/owentravis/Documents/IW/GoGames/gamesListNew.txt", "w+") as newList:
+    #         for line in oldList:
+    #             if line.strip() not in done:
+    #                 newList.write(line.strip() + "\n")
 
 def countOTTypes():
     ot_types = set()

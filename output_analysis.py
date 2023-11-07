@@ -47,22 +47,25 @@ def main():
                 br = None
                 wr = None
                 nskip = 0
-                for line in f:
-                    if line.startswith('OT'):
-                        ot = line[3:-2]
-                    elif line.startswith('BR'):
-                        br = line[3:-2]
-                    elif line.startswith("WR"):
-                        wr = line[3:-2]
-                    elif line.startswith("TM"):
-                        tm = line[3:-2]
-                    elif line.startswith("RE"):
-                        winner = line[3]
-                        if winner == "V" or winner == "v":
-                            print(filepath)
-                    elif line.startswith("Num"):
-                        break
-                    nskip += 1
+                try:
+                    for line in f:
+                        if line.startswith('OT'):
+                            ot = line[3:-2]
+                        elif line.startswith('BR'):
+                            br = line[3:-2]
+                        elif line.startswith("WR"):
+                            wr = line[3:-2]
+                        elif line.startswith("TM"):
+                            tm = line[3:-2]
+                        elif line.startswith("RE"):
+                            winner = line[3]
+                            if winner == "V" or winner == "v":
+                                print(filepath)
+                        elif line.startswith("Num"):
+                            break
+                        nskip += 1
+                except:
+                    print(filepath)
             timeSys = tm + " " + ot
             dfCurr = pd.read_csv(filepath, delim_whitespace=True, skiprows=nskip, header=0)
             dfCurr = dfCurr[dfCurr.AN != 0]
@@ -80,7 +83,7 @@ def main():
     addScoreLdVOC(df)
     addUtilityVOC(df)
 
-    df.to_csv("/Users/owentravis/Documents/IW/df-pt1.csv")
+    df.to_csv("/Users/owentravis/Documents/IW/df-all.csv")
 
     # df = pd.read_csv("/Users/owentravis/Documents/IW/df.csv")
 
