@@ -2,21 +2,23 @@ from sgfmill import sgf
 import numpy as np
 import os
 import random
+import pandas as pd
 
+# Given an sgf filepath, return the root node
 def from_filepath_get_root(filepath):
     with open(filepath, "rb") as f:
         try:
             game = sgf.Sgf_game.from_bytes(f.read())
         except:
             print("Not a valid sgf file.")
-            return False
+            return None
     root_node = game.get_root()
     return root_node
 
-
+# Given a root node, check for validity
 def valid_root(root_node):
     # check that the game is Go
-    if root_node.get("GM") != 1:
+    if (not root_node.has_property("GM")) or root_node.get("GM") != 1:
         print("not go")
         return False
     if len(root_node) == 0:
@@ -56,35 +58,48 @@ def get_mean_distance(root):
         return np.mean(distances)
     return None
 
-def main():
-    # data_folder = '/Users/owentravis/Documents/IW/GoGames'
-    # with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
-    #     filenames = gamesList.readlines()
-        
-    data_folder = '/Users/owentravis/Downloads/AlphaGoSelfPlay'
-    with open(os.path.join(data_folder, "agGamesList.txt"), "r") as gamesList:
-        filenames = gamesList.readlines()
-
+def get_all_mean_distances(data_folder, filenames):
     mean_dists = []
-    print(len(filenames))
-    for i in random.sample(range(len(filenames)), len(filenames)):
-        print(i)
-        filepath = os.path.join(data_folder, filenames[i].strip())
-        print(filepath)
+    count = 0
+    for filename in filenames:
+        print(count)
+        filepath = os.path.join(data_folder, filename.strip())
         root_node = from_filepath_get_root(filepath)
         if not root_node:
-            # print("Quitting.")
+            print("Quitting.")
             continue
-        
-        # if not valid_root(root_node):
-        #     # print("Quitting. Not a valid root.")
-        #     continue
-        
-        # print("Root is valid")
+        if not valid_root(root_node):
+            print("Quitting. Not a valid root.")
+            continue
+        print("Root is valid")
+
         mean_dist = get_mean_distance(root_node)
         if mean_dist:
             mean_dists.append(mean_dist)
-    print(np.mean(mean_dists))
+        count += 1
+        if count > 3000:
+            break
+
+    return mean_dists
+
+def main():
+    human_data_folder = '/Users/owentravis/Documents/IW/GoGames'
+    with open(os.path.join(human_data_folder, "gamesList.txt"), "r") as gamesList:
+        human_filenames = gamesList.readlines()
+    human_mean_dists = get_all_mean_distances(human_data_folder, human_filenames)
+        
+    alphago_data_folder = '/Users/owentravis/Downloads/AlphaGoSelfPlay'
+    with open(os.path.join(alphago_data_folder, "agGamesList.txt"), "r") as agGamesList:
+        alphago_filenames = agGamesList.readlines()
+    alphago_mean_dists = get_all_mean_distances(alphago_data_folder, alphago_filenames)
+
+    print(len(human_mean_dists))
+    print(np.mean(human_mean_dists))
+    print(len(alphago_mean_dists))
+    print(np.mean(alphago_mean_dists))
+
+
+
 
 if __name__=="__main__":
     main()
