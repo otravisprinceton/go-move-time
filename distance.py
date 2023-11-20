@@ -4,6 +4,10 @@ import os
 import random
 import pandas as pd
 
+
+BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
+"neural", "sgmdb", "alphacent1", "dcnn", "golois", "bot", "tw001", "pachipachi", "alphago"}
+
 # Given an sgf filepath, return the root node
 def from_filepath_get_root(filepath):
     with open(filepath, "rb") as f:
@@ -35,76 +39,125 @@ def valid_root(root_node):
     # ST --> defines variations and markup
     return True
 
+def get_ranks(root):
+    ranks = {"b":None, "w":None}
+    if root.has_property("BR"):
+        ranks["b"]=root.get("BR")
+    if root.has_property("WR"):
+        ranks["w"]=root.get("WR")
+    return ranks
+    
+def get_names(root):
+    names = {"b":None, "w":None}
+    if root.has_property("PB"):
+        names["b"]=root.get("PB")
+    if root.has_property("PW"):
+        names["w"]=root.get("PW")
+    return names
+
+def get_bot_status(root):
+    bot_status = {"b":False, "w":False}
+
+    if root.has_property("PB"):
+        pb = root.get("PB").lower()
+        for partial in BOT_PARTIALS:
+            if partial in pb:
+                bot_status["b"] = True
+                print("Black is a bot")
+                break
+    else:
+        bot_status["b"] = None
+    
+    if root.has_property("PW"):
+        pw = root.get("PW").lower()
+        for partial in BOT_PARTIALS:
+            if partial in pw:
+                bot_status["w"] = True
+                print("White is a bot")
+                break
+    else:
+        bot_status["w"] = None
+
 # For a single game, given the root, get the average distance between
 # moves
-def get_mean_distance(root):
-    distances = []
+def process_game(root):
+    ranks = get_ranks(root)
+    names = get_names(root)
+
+    rows = []
+
+    moveNumber = 1
+    prev_coord = None
     curr = root[0]
-    _, prev_coord = curr.get_move()
-    if not prev_coord:
-        print("Game starts with a pass")
-        return None
-    curr = curr[0]
     while True:
-        _, coord = curr.get_move()
-        if not coord:
-            break
-        dist = abs(coord[1] - prev_coord[1]) + abs(coord[0]-prev_coord[0])
-        distances.append(dist)
-        prev_coord = coord
+        color, coord = curr.get_move()
+        if coord:
+            coord_toPrint = coord
+            if prev_coord:
+                dist = abs(coord[0]-prev_coord[0]) + abs(coord[1]-prev_coord[1])
+            else:
+                dist = None
+        else:
+            coord_toPrint = (None, None)
+            dist = None
+        row = [moveNumber,
+               color,
+               ranks[color],
+               coord_toPrint[0],
+               coord_toPrint[1],
+               dist]
+        rows.append(row)
+
+        # Exit or advance the loop
         if len(curr) == 0:
             break
+        prev_coord = coord
         curr = curr[0]
-    if distances:
-        return np.mean(distances)
-    return None
+        moveNumber += 1
+
+    return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Rank", "Row", "Col", "Dist"])
 
 
 
-def get_all_mean_distances(data_folder, filenames):
-    mean_dists = []
+def process_all_games(data_folder, filenames, isAlphaGoSelfPlay=False):
+    dfs = []
     count = 0
+    random.shuffle(filenames)
     for filename in filenames:
         print(count)
         filepath = os.path.join(data_folder, filename.strip())
-        root_node = from_filepath_get_root(filepath)
-        if not root_node:
+        print(filepath)
+        root = from_filepath_get_root(filepath)
+        if not root:
             print("Quitting.")
             continue
-        if not valid_root(root_node):
+        if not (isAlphaGoSelfPlay or valid_root(root)):
             print("Quitting. Not a valid root.")
             continue
-        print("Root is valid")
 
-        mean_dist = get_mean_distance(root_node)
-        if mean_dist:
-            mean_dists.append(mean_dist)
+        game_df = process_game(root)
+        game_df["Game"] = filename.strip()
+        dfs.append(game_df)
         count += 1
-        if count > 4000:
+
+        if count > 10:
             break
 
-    return mean_dists
+    return pd.concat(dfs, ignore_index=True, axis=0)
 
 def main():
     human_data_folder = '/Users/owentravis/Documents/IW/GoGames'
     with open(os.path.join(human_data_folder, "gamesList.txt"), "r") as gamesList:
         human_filenames = gamesList.readlines()
-    human_mean_dists = get_all_mean_distances(human_data_folder, human_filenames)
+    human_df = process_all_games(human_data_folder, human_filenames)
         
     alphago_data_folder = '/Users/owentravis/Downloads/AlphaGoSelfPlay'
     with open(os.path.join(alphago_data_folder, "agGamesList.txt"), "r") as agGamesList:
         alphago_filenames = agGamesList.readlines()
-    alphago_mean_dists = get_all_mean_distances(alphago_data_folder, alphago_filenames)
+    ag_df = process_all_games(alphago_data_folder, alphago_filenames, True)
 
-    print(len(human_mean_dists))
-    print(np.mean(human_mean_dists))
-    print(len(alphago_mean_dists))
-    print(np.mean(alphago_mean_dists))
-
-    ag_df = pd.DataFrame(alphago_mean_dists, columns=["distance"])
-    ag_df["player"] = "AlphaGo"
-    human_df = pd.DataFrame(human_mean_dists, columns=["distance"])
-    human_df["player"] = "Human"
+    ag_df["isAlphaGo"] = 1
+    human_df["isAlphaGo"] = 0
 
     res = pd.concat([ag_df, human_df], ignore_index=True, axis=0)
     res.to_csv("distance_output.csv", index=False)
