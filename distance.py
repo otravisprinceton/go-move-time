@@ -15,7 +15,7 @@ def from_filepath_get_root(filepath):
     root_node = game.get_root()
     return root_node
 
-# Given a root node, check for validity
+# Given a root node, check that it's valid
 def valid_root(root_node):
     # check that the game is Go
     if (not root_node.has_property("GM")) or root_node.get("GM") != 1:
@@ -35,7 +35,8 @@ def valid_root(root_node):
     # ST --> defines variations and markup
     return True
 
-
+# For a single game, given the root, get the average distance between
+# moves
 def get_mean_distance(root):
     distances = []
     curr = root[0]
@@ -58,6 +59,8 @@ def get_mean_distance(root):
         return np.mean(distances)
     return None
 
+
+
 def get_all_mean_distances(data_folder, filenames):
     mean_dists = []
     count = 0
@@ -77,7 +80,7 @@ def get_all_mean_distances(data_folder, filenames):
         if mean_dist:
             mean_dists.append(mean_dist)
         count += 1
-        if count > 3000:
+        if count > 4000:
             break
 
     return mean_dists
@@ -98,8 +101,13 @@ def main():
     print(len(alphago_mean_dists))
     print(np.mean(alphago_mean_dists))
 
+    ag_df = pd.DataFrame(alphago_mean_dists, columns=["distance"])
+    ag_df["player"] = "AlphaGo"
+    human_df = pd.DataFrame(human_mean_dists, columns=["distance"])
+    human_df["player"] = "Human"
 
-
+    res = pd.concat([ag_df, human_df], ignore_index=True, axis=0)
+    res.to_csv("distance_output.csv", index=False)
 
 if __name__=="__main__":
     main()
