@@ -6,3 +6,7 @@
 *-highset.txt
 *-lowset.txt
 *-voc.txt
+
+distance_output1.csv
+distance_output0.csv
+distance_output_handicap_handled.csv

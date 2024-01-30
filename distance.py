@@ -1,3 +1,8 @@
+###---------------------------------------------------------------------
+# First analysis
+# Calculate the average distance between moves
+###---------------------------------------------------------------------
+
 from sgfmill import sgf
 import numpy as np
 import os
@@ -63,7 +68,6 @@ def get_bot_status(root):
         for partial in BOT_PARTIALS:
             if partial in pb:
                 bot_status["b"] = True
-                print("Black is a bot")
                 break
     else:
         bot_status["b"] = None
@@ -73,22 +77,38 @@ def get_bot_status(root):
         for partial in BOT_PARTIALS:
             if partial in pw:
                 bot_status["w"] = True
-                print("White is a bot")
                 break
     else:
         bot_status["w"] = None
+
+    return bot_status
+
+# Advance past the handicap moves
+def skipHandicap(root):
+    curr = root[0]
+    # If there is a handicap and the first two moves were played by the
+    # same color...
+    if root.has_property("HA") and curr.get_move()[0] == curr[0].get_move()[0]:
+        handicap = root.get("HA")
+        for _ in range(handicap):
+            curr = curr[0]
+    print(curr)
+    return curr
 
 # For a single game, given the root, get the average distance between
 # moves
 def process_game(root):
     ranks = get_ranks(root)
     names = get_names(root)
+    bot_status = get_bot_status(root)
 
     rows = []
 
     moveNumber = 1
     prev_coord = None
-    curr = root[0]
+
+    # Skip past the handicap moves, if they are played out
+    curr = skipHandicap(root)
     while True:
         color, coord = curr.get_move()
         if coord:
@@ -102,7 +122,9 @@ def process_game(root):
             dist = None
         row = [moveNumber,
                color,
+               names[color],
                ranks[color],
+               bot_status[color],
                coord_toPrint[0],
                coord_toPrint[1],
                dist]
@@ -114,8 +136,10 @@ def process_game(root):
         prev_coord = coord
         curr = curr[0]
         moveNumber += 1
+        if moveNumber > 600:
+            raise Exception()
 
-    return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Rank", "Row", "Col", "Dist"])
+    return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Name", "Rank", "isBot", "Row", "Col", "Dist"])
 
 
 
@@ -140,12 +164,17 @@ def process_all_games(data_folder, filenames, isAlphaGoSelfPlay=False):
         dfs.append(game_df)
         count += 1
 
-        if count > 10:
+        if count > 1000:
             break
 
     return pd.concat(dfs, ignore_index=True, axis=0)
 
 def main():
+    # Testing
+    # filepath = "./test_sgf/byoyomi-HA4PO.sgf"
+    # root = from_filepath_get_root(filepath)
+    # skipHandicap(root)
+
     human_data_folder = '/Users/owentravis/Documents/IW/GoGames'
     with open(os.path.join(human_data_folder, "gamesList.txt"), "r") as gamesList:
         human_filenames = gamesList.readlines()
@@ -160,7 +189,7 @@ def main():
     human_df["isAlphaGo"] = 0
 
     res = pd.concat([ag_df, human_df], ignore_index=True, axis=0)
-    res.to_csv("distance_output.csv", index=False)
+    res.to_csv("distance_output_handicap_handled.csv", index=False)
 
 if __name__=="__main__":
     main()
