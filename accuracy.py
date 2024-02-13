@@ -249,7 +249,7 @@ def main():
     dfs = []
     data_folder = '/Users/owentravis/Documents/IW/GoGames'
 
-    is_array_job = False
+    is_array_job = True
     on_cluster = True
 
     if is_array_job:
@@ -267,10 +267,9 @@ def main():
 
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
-            if i == 5 or i==10 or i==30:
-                main_helper(filenames[i].strip(), data_folder, dfs)
+            main_helper(filenames[i].strip(), data_folder, dfs)
 
-    pd.concat(dfs).to_csv('/scratch/gpfs/otravis/accuracy.csv')
+    pd.concat(dfs, ignore_index=True).to_csv('/scratch/gpfs/otravis/accuracy.csv')
 
 if __name__ == "__main__":
     main()
