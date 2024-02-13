@@ -7,9 +7,15 @@ NUMJOBS = 300
 
 
 # Local
-KATAGO = "katago"
-MODEL = "/usr/local/Cellar/katago/1.13.2/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
-CFG_FILE = "./gtp_high.cfg"
+# KATAGO = "katago"
+# MODEL = "/usr/local/Cellar/katago/1.13.2/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
+# CFG_FILE = "./gtp_high.cfg"
+
+# Della
+KATAGO = "/home/otravis/software/KataGoOpenCL/katago"
+MODEL = "/home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz" #30
+CFG_FILE = "/home/otravis/go-move-time/gtp_high.cfg"
+
 BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
 "neural", "sgmdb", "alphacent1", "dcnn", "golois", "bot", "tw001", "pachipachi"}
 
@@ -219,39 +225,48 @@ def main_helper(filepath, data_folder):
     print(katago_input)
 
     output_filepath = os.path.normpath(os.path.join(data_folder, "../localtmpout/", filepath[7:-4] + "-out.txt"))
+    output_filepath = data_folder[:-7] + "OutputAccuracyFeb13-24/" + filepath[:-4] + "-acc.txt"
+
     print("Saving to " + str(output_filepath))
     print("Running katago.")
     with open(output_filepath, "w+") as outputF:
         runkata(katago_input, CFG_FILE, outputF)
     print("Saved output to: " + output_filepath)
-    with open(output_filepath, "r") as outputF:
-        readOutput(allMovesL, outputF)
 
-    # Calculate distances
-    for moveO in allMovesL:
-        if moveO.analyzed:
-            addDistancesToMoveO(moveO)
+    # with open(output_filepath, "r") as outputF:
+    #     readOutput(allMovesL, outputF)
 
-    allMovesL[0].prev_gtp_vertex = None
-    print(pd.DataFrame([vars(s) for s in allMovesL]))
+    # # Calculate distances
+    # for moveO in allMovesL:
+    #     if moveO.analyzed:
+    #         addDistancesToMoveO(moveO)
+
+    # allMovesL[0].prev_gtp_vertex = None
+    # print(pd.DataFrame([vars(s) for s in allMovesL]))
     
 
 def main():
     data_folder = '/Users/owentravis/Documents/IW/GoGames'
 
     is_array_job = False
+    on_cluster = True
 
     if is_array_job:
         job_idx = int(os.environ["SLURM_ARRAY_TASK_ID"]) - 1
     else:
         job_idx = -1
 
+    if on_cluster:
+        data_folder = '/scratch/gpfs/otravis/GoGames'
+    else:
+        data_folder = '/Users/owentravis/Documents/IW/GoGames'
+
     with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
         filenames = gamesList.readlines()
 
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
-            if i ==0:
+            if i == 0:
                 main_helper(filenames[i].strip(), data_folder)
 
 if __name__ == "__main__":
