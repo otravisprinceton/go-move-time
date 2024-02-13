@@ -266,7 +266,7 @@ def main():
 
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
-            if i == 20:
+            if i == 5:
                 main_helper(filenames[i].strip(), data_folder)
 
 if __name__ == "__main__":
