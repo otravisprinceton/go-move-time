@@ -269,7 +269,7 @@ def main():
         if i % NUMJOBS == job_idx or job_idx == -1:
             main_helper(filenames[i].strip(), data_folder, dfs)
 
-    pd.concat(dfs, ignore_index=True).to_csv('/scratch/gpfs/otravis/accuracy.csv')
+    pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/accuracy-{job_idx}.csv')
 
 if __name__ == "__main__":
     main()
