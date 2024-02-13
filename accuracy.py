@@ -233,16 +233,16 @@ def main_helper(filepath, data_folder):
         runkata(katago_input, CFG_FILE, outputF)
     print("Saved output to: " + output_filepath)
 
-    # with open(output_filepath, "r") as outputF:
-    #     readOutput(allMovesL, outputF)
+    with open(output_filepath, "r") as outputF:
+        readOutput(allMovesL, outputF)
 
-    # # Calculate distances
-    # for moveO in allMovesL:
-    #     if moveO.analyzed:
-    #         addDistancesToMoveO(moveO)
+    # Calculate distances
+    for moveO in allMovesL:
+        if moveO.analyzed:
+            addDistancesToMoveO(moveO)
 
-    # allMovesL[0].prev_gtp_vertex = None
-    # print(pd.DataFrame([vars(s) for s in allMovesL]))
+    allMovesL[0].prev_gtp_vertex = None
+    print(pd.DataFrame([vars(s) for s in allMovesL]))
     
 
 def main():
