@@ -191,7 +191,7 @@ def addDistancesToMoveO(moveO):
         moveO.best_dy = int(abs(bestMoveSGF[0] - prevVertexSGF[0]))
 
 # Runs once per game file
-def main_helper(filepath, data_folder):
+def main_helper(filepath, data_folder, dfs):
     allMovesL = []
     print(f"Loading file {filepath}.")
 
@@ -242,10 +242,11 @@ def main_helper(filepath, data_folder):
             addDistancesToMoveO(moveO)
 
     allMovesL[0].prev_gtp_vertex = None
-    print(pd.DataFrame([vars(s) for s in allMovesL]))
+    dfs.append(pd.DataFrame([vars(s) for s in allMovesL]))
     
 
 def main():
+    dfs = []
     data_folder = '/Users/owentravis/Documents/IW/GoGames'
 
     is_array_job = False
@@ -266,8 +267,10 @@ def main():
 
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
-            if i == 5:
+            if i == 5 or i==10 or i==30:
                 main_helper(filenames[i].strip(), data_folder)
+
+    pd.concat(dfs).to_csv('/scratch/gpfs/otravis/accuracy.csv')
 
 if __name__ == "__main__":
     main()
