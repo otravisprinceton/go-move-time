@@ -1,0 +1,198 @@
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move R4 visits 127 utility 1.07735 winrate 0.996495 scoreMean 29.1604 scoreStdev 20.7172 scoreLead 29.1604 scoreSelfplay 32.5198 prior 0.334519 lcb 0.995332 utilityLcb 1.0741 weight 126.483 order 0 pv R4 Q3 P4 O2 Q10 C14 F17 C6
+play R4
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move Q5 visits 123 utility 1.08384 winrate 0.996717 scoreMean 29.3814 scoreStdev 20.5234 scoreLead 29.3814 scoreSelfplay 32.6855 prior 0.333795 lcb 0.995872 utilityLcb 1.08148 weight 123 order 0 pv Q5 S6 K4 F17 C14 O17
+play Q5
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move R6 visits 102 utility 1.0772 winrate 0.996326 scoreMean 29.1015 scoreStdev 20.8358 scoreLead 29.1015 scoreSelfplay 32.4683 prior 0.347391 lcb 0.995258 utilityLcb 1.07421 weight 102 order 0 pv R6 S6 R7 S7 R8 F17 K4 P5
+play R6
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move R7 visits 221 utility 1.07482 winrate 0.996274 scoreMean 28.91 scoreStdev 20.7454 scoreLead 28.91 scoreSelfplay 32.2689 prior 0.736893 lcb 0.995514 utilityLcb 1.07269 weight 220.829 order 0 pv R7 C6 K4 S7 R8 C14
+play R7
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move R8 visits 109 utility 1.07735 winrate 0.996303 scoreMean 29.0821 scoreStdev 20.7773 scoreLead 29.0821 scoreSelfplay 32.3573 prior 0.395488 lcb 0.995378 utilityLcb 1.07476 weight 108.996 order 0 pv R8 K3 G3 M4 F17 O17
+play R8
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move D3 visits 111 utility 1.08296 winrate 0.996801 scoreMean 29.1786 scoreStdev 20.6259 scoreLead 29.1786 scoreSelfplay 32.5117 prior 0.320214 lcb 0.9957 utilityLcb 1.07988 weight 111 order 0 pv D3 C4 D5 B6 K4 P5 N4 O17
+play D3
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move D5 visits 133 utility 1.08561 winrate 0.996765 scoreMean 29.515 scoreStdev 20.5086 scoreLead 29.515 scoreSelfplay 32.7675 prior 0.313762 lcb 0.995997 utilityLcb 1.08346 weight 133.518 order 0 pv D5 B6 K4 F17 Q2 R2
+play D5
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move C6 visits 68 utility 1.07473 winrate 0.996237 scoreMean 28.0744 scoreStdev 20.6064 scoreLead 28.0744 scoreSelfplay 31.3502 prior 0.275053 lcb 0.994245 utilityLcb 1.06915 weight 68 order 0 pv C6 B6 C7 K4 M4 B7 C8 H4
+play C6
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move C7 visits 178 utility 1.06693 winrate 0.996141 scoreMean 27.6454 scoreStdev 20.5162 scoreLead 27.6454 scoreSelfplay 30.944 prior 0.653393 lcb 0.995293 utilityLcb 1.06456 weight 177.983 order 0 pv C7 K4 M4 B7 C8 H4 J5
+play C7
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move K4 visits 128 utility 1.07652 winrate 0.996286 scoreMean 28.2896 scoreStdev 20.5012 scoreLead 28.2896 scoreSelfplay 31.5564 prior 0.207803 lcb 0.99464 utilityLcb 1.07191 weight 128 order 0 pv K4 C8 D8 C9 C2 B2 Q2 R2 K7
+play K4
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move K4 visits 61 utility 1.07885 winrate 0.996594 scoreMean 27.9564 scoreStdev 20.7405 scoreLead 27.9564 scoreSelfplay 31.2863 prior 0.18018 lcb 0.994697 utilityLcb 1.07354 weight 61 order 0 pv K4 L3 J4 J3 H4 H3
+play K4
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move J4 visits 128 utility 1.07704 winrate 0.995959 scoreMean 27.2579 scoreStdev 20.7432 scoreLead 27.2579 scoreSelfplay 30.5684 prior 0.28558 lcb 0.994741 utilityLcb 1.07363 weight 128 order 0 pv J4 M5 J3 P5 Q5 L6 L4 N7
+play J4
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move J4 visits 130 utility 1.07282 winrate 0.995733 scoreMean 26.9886 scoreStdev 20.8744 scoreLead 26.9886 scoreSelfplay 30.3258 prior 0.230469 lcb 0.994393 utilityLcb 1.06907 weight 130 order 0 pv J4 J3 H4 P5 Q5 H3 G4 N5
+play J4
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move J4 visits 75 utility 1.07577 winrate 0.995649 scoreMean 27.2734 scoreStdev 21.1301 scoreLead 27.2734 scoreSelfplay 30.6856 prior 0.260072 lcb 0.993969 utilityLcb 1.07106 weight 75 order 0 pv J4 J3 H4 N5 H3 P5
+play J4
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move C2 visits 87 utility 1.07702 winrate 0.995977 scoreMean 27.0545 scoreStdev 20.4494 scoreLead 27.0545 scoreSelfplay 30.2825 prior 0.0841216 lcb 0.99431 utilityLcb 1.07235 weight 86.8861 order 0 pv C2 B2 E2 C1 J4 J3 G5 O17
+play C2
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move C2 visits 68 utility 1.0684 winrate 0.995439 scoreMean 26.1422 scoreStdev 20.7033 scoreLead 26.1422 scoreSelfplay 29.3512 prior 0.13923 lcb 0.992321 utilityLcb 1.05967 weight 68 order 0 pv C2 B2 E2 C1 G2 F2 F1 F3 H3 H4
+play C2
+
+= 
+
+= 
+
+= 
+

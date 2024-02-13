@@ -1,0 +1,28 @@
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move C10 visits 71 utility 1.11419 winrate 0.999115 scoreMean 42.5536 scoreStdev 21.9283 scoreLead 42.5536 scoreSelfplay 45.9853 prior 0.0557626 lcb 0.998096 utilityLcb 1.11133 weight 71 order 0 pv C10 F4 F5 G5 E5
+play C10
+
+= 
+
+= 
+
+= 
+
+= 
+
+=
+info move F4 visits 69 utility 1.13371 winrate 0.999694 scoreMean 55.7119 scoreStdev 23.9166 scoreLead 55.7119 scoreSelfplay 58.6078 prior 0.0668787 lcb 0.998683 utilityLcb 1.13088 weight 69 order 0 pv F4 C10 C14 O17
+play F4
+
+= 
+
+= 
+
