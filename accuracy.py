@@ -268,7 +268,7 @@ def main():
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
             if i == 5 or i==10 or i==30:
-                main_helper(filenames[i].strip(), data_folder)
+                main_helper(filenames[i].strip(), data_folder, dfs)
 
     pd.concat(dfs).to_csv('/scratch/gpfs/otravis/accuracy.csv')
 
