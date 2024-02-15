@@ -82,6 +82,48 @@ def is_go(root):
 def has_multiple_moves(root):
     return len(root) != 0 and len(root[0]) != 0
 
+# Given the root, return a dictionary of player names
+def get_player_names(root):
+    res = {
+        "b": None,
+        "w": None
+    }
+    if root.has_property("PB"):
+        res["b"] = root.get("PB")
+    if root.has_property("PW"):
+        res["w"] = root.get("PW")
+    return res
+
+# Given the root, return a dictionary of player ranks
+def get_player_ranks(root):
+    res = {
+        "b": None,
+        "w": None
+    }
+    if root.has_property("BR"):
+        res["b"] = root.get("BR")
+    if root.has_property("WR"):
+        res["w"] = root.get("WR")
+    return res
+
+# Given the root, return the time system
+def get_time_system(root):
+    if root.has_property("TM"):
+        return root.get("TM")
+    return None
+
+# Given the root, return the overtime system
+def get_overtime_system(root):
+    if root.has_property("OT"):
+        return root.get("OT")
+    return None
+
+# Given the root, return the game result
+def get_game_result(root):
+    if root.has_property("RE"):
+        return root.get("RE")
+    return None
+
 def main():
     # Testing
     filename = "./test_sgf/byoyomi-HA4PO.sgf"

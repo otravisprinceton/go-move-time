@@ -1,4 +1,5 @@
-from sgfmillplus import get_root, sgf_to_gtp, gtp_to_sgf, is_go, has_multiple_moves
+from sgfmillplus import get_root, sgf_to_gtp, gtp_to_sgf, is_go, has_multiple_moves, get_player_names, get_player_ranks
+from sgfmillplus import get_time_system, get_overtime_system, get_game_result
 import os
 import subprocess
 import pandas as pd
@@ -20,11 +21,27 @@ BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
 "neural", "sgmdb", "alphacent1", "dcnn", "golois", "bot", "tw001", "pachipachi"}
 
 class MoveInfo:
-    def __init__(self, num, color, gtp_vertex, in_overtime):
+    def __init__(self,
+                 num,
+                 color,
+                 gtp_vertex,
+                 in_overtime,
+                 playerName,
+                 gameFile,
+                 playerRank,
+                 timeSystem,
+                 overtimeSystem,
+                 gameResult):
         self.num = num
         self.color = color
         self.gtp_vertex = gtp_vertex
         self.in_overtime = in_overtime
+        self.playerName = playerName
+        self.gameFile = gameFile
+        self.playerRank = playerRank
+        self.timeSystem = timeSystem
+        self.overtimeSystem = overtimeSystem
+        self.gameResult = gameResult
         self.played_dx = None
         self.played_dy = None
         self.analyzed = None
@@ -43,22 +60,6 @@ class MoveInfo:
         res += str(self.bestMove) + " "
         res += str(self.prev_gtp_vertex) + " "
         return res
-    
-    def to_dict(self):
-        return {
-            'PrevMoveVertex': self.prev_gtp_vertex,
-            'MoveNumber': self.num,
-            'InOvertime': self.in_overtime,
-            'Color': self.color,
-            'PlayedVertex': self.gtp_vertex,
-            'Analyzed': self.analyzed,
-            'PlayedDx': self.played_dx,
-            'PlayedDy': self.played_dy,
-            'BestMove': self.bestMove,
-            'BestDx': self.best_dx,
-            'BestDy': self.best_dy
-        }
-
 
 def findBots(root):
     whiteIsBot, blackIsBot = False, False
@@ -134,7 +135,11 @@ def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
     if blackIsBot:
         bots.add('b')
 
-    print(curr.get_move())
+    player_names = get_player_names(root)
+    player_ranks = get_player_ranks(root)
+    time_system = get_time_system(root)
+    overtime_system = get_overtime_system(root)
+    game_result = get_game_result(root)
 
     prev_sgf_vertex = None
 
@@ -142,7 +147,17 @@ def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
         color, sgf_vertex = curr.get_move()
         gtp_vertex = sgf_to_gtp(sgf_vertex)
 
-        moveO = MoveInfo(count, color, gtp_vertex, in_overtime=curr.has_property("O" + color.upper()))
+        moveO = MoveInfo(count,
+                         color,
+                         gtp_vertex,
+                         in_overtime=curr.has_property("O" + color.upper()),
+                         playerName = player_names[color],
+                         gameFile = filepath,
+                         playerRank = player_ranks[color],
+                         timeSystem = time_system,
+                         overtimeSystem = overtime_system,
+                         gameResult = game_result
+                         )
 
         moveO.prev_gtp_vertex = sgf_to_gtp(prev_sgf_vertex)
         if prev_sgf_vertex and sgf_vertex:
@@ -224,7 +239,10 @@ def main_helper(filepath, data_folder, dfs):
 
     print(katago_input)
 
-    output_filepath = os.path.normpath(os.path.join(data_folder, "../localtmpout/", filepath[7:-4] + "-out.txt"))
+    # Local
+    # output_filepath = os.path.normpath(os.path.join(data_folder, "../localtmpout/", filepath[7:-4] + "-out.txt"))
+
+    # DELLA
     output_filepath = data_folder[:-7] + "OutputAccuracyFeb13-24/" + filepath[:-4] + "-acc.txt"
 
     print("Saving to " + str(output_filepath))
@@ -247,9 +265,8 @@ def main_helper(filepath, data_folder, dfs):
 
 def main():
     dfs = []
-    data_folder = '/Users/owentravis/Documents/IW/GoGames'
 
-    is_array_job = True
+    is_array_job = False
     on_cluster = True
 
     if is_array_job:
@@ -260,16 +277,27 @@ def main():
     if on_cluster:
         data_folder = '/scratch/gpfs/otravis/GoGames'
     else:
-        data_folder = '/Users/owentravis/Documents/IW/GoGames'
+        data_folder = '/Users/owentravis/Documents/IW/go-move-time/test_sgf'
 
     with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
         filenames = gamesList.readlines()
 
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
-            main_helper(filenames[i].strip(), data_folder, dfs)
+            if i == 6:
+                main_helper(filenames[i].strip(), data_folder, dfs)
 
-    pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/accuracy-{job_idx}.csv')
+    # main_helper("test_weird_passes.sgf", data_folder, dfs)
+
+
+    # Della
+    # pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/accuracy-{job_idx}.csv')
+    pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/tmp-testing.csv')
+
+    # Local
+    # pd.concat(dfs, ignore_index=True).to_csv(f'/Users/owentravis/Documents/IW/go-move-time/tmp-out.csv')
+
+
 
 if __name__ == "__main__":
     main()
