@@ -266,7 +266,7 @@ def main_helper(filepath, data_folder, dfs):
 def main():
     dfs = []
 
-    is_array_job = False
+    is_array_job = True
     on_cluster = True
 
     if is_array_job:
@@ -284,15 +284,13 @@ def main():
 
     for i in range(len(filenames)):
         if i % NUMJOBS == job_idx or job_idx == -1:
-            if i == 6:
-                main_helper(filenames[i].strip(), data_folder, dfs)
+            main_helper(filenames[i].strip(), data_folder, dfs)
 
     # main_helper("test_weird_passes.sgf", data_folder, dfs)
 
-
     # Della
-    # pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/accuracy-{job_idx}.csv')
-    pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/tmp-testing.csv')
+    pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/accuracy-{job_idx}.csv')
+    # pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/tmp-testing.csv')
 
     # Local
     # pd.concat(dfs, ignore_index=True).to_csv(f'/Users/owentravis/Documents/IW/go-move-time/tmp-out.csv')
