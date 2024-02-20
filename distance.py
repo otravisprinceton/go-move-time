@@ -2,8 +2,7 @@
 # First analysis
 # Calculate the average distance between moves
 ###---------------------------------------------------------------------
-
-from sgfmill import sgf
+from sgfmillplus import get_root, is_go, has_multiple_moves, get_player_names, get_player_ranks
 import numpy as np
 import os
 import random
@@ -12,53 +11,6 @@ import pandas as pd
 
 BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
 "neural", "sgmdb", "alphacent1", "dcnn", "golois", "bot", "tw001", "pachipachi", "alphago"}
-
-# Given an sgf filepath, return the root node
-def from_filepath_get_root(filepath):
-    with open(filepath, "rb") as f:
-        try:
-            game = sgf.Sgf_game.from_bytes(f.read())
-        except:
-            print("Not a valid sgf file.")
-            return None
-    root_node = game.get_root()
-    return root_node
-
-# Given a root node, check that it's valid
-def valid_root(root_node):
-    # check that the game is Go
-    if (not root_node.has_property("GM")) or root_node.get("GM") != 1:
-        print("not go")
-        return False
-    if len(root_node) == 0:
-        print("no moves were made")
-        return False
-    if len(root_node[0]) == 0:
-        print("only one move was made")
-        return False
-
-    # other checks here?
-    # FF --> version of sgf (e.g. 4)
-    # CA --> character set (e.g. UTF-8)
-    # AP --> app that was used to create sgf
-    # ST --> defines variations and markup
-    return True
-
-def get_ranks(root):
-    ranks = {"b":None, "w":None}
-    if root.has_property("BR"):
-        ranks["b"]=root.get("BR")
-    if root.has_property("WR"):
-        ranks["w"]=root.get("WR")
-    return ranks
-    
-def get_names(root):
-    names = {"b":None, "w":None}
-    if root.has_property("PB"):
-        names["b"]=root.get("PB")
-    if root.has_property("PW"):
-        names["w"]=root.get("PW")
-    return names
 
 def get_bot_status(root):
     bot_status = {"b":False, "w":False}
@@ -90,16 +42,18 @@ def skipHandicap(root):
     # same color...
     if root.has_property("HA") and curr.get_move()[0] == curr[0].get_move()[0]:
         handicap = root.get("HA")
-        for _ in range(handicap):
-            curr = curr[0]
-    print(curr)
+        try:
+            for _ in range(handicap):
+                curr = curr[0]
+        except:
+            return None
     return curr
 
 # For a single game, given the root, get the average distance between
 # moves
 def process_game(root):
-    ranks = get_ranks(root)
-    names = get_names(root)
+    ranks = get_player_ranks(root)
+    names = get_player_names(root)
     bot_status = get_bot_status(root)
 
     rows = []
@@ -109,6 +63,9 @@ def process_game(root):
 
     # Skip past the handicap moves, if they are played out
     curr = skipHandicap(root)
+    if not curr:
+        return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Name", "Rank", "isBot", "Row", "Col", "Dist"])
+
     while True:
         color, coord = curr.get_move()
         if coord:
@@ -136,8 +93,8 @@ def process_game(root):
         prev_coord = coord
         curr = curr[0]
         moveNumber += 1
-        if moveNumber > 600:
-            raise Exception()
+        # if moveNumber > 400:
+        #     raise Exception()
 
     return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Name", "Rank", "isBot", "Row", "Col", "Dist"])
 
@@ -151,21 +108,28 @@ def process_all_games(data_folder, filenames, isAlphaGoSelfPlay=False):
         print(count)
         filepath = os.path.join(data_folder, filename.strip())
         print(filepath)
-        root = from_filepath_get_root(filepath)
-        if not root:
-            print("Quitting.")
+
+        # Get the root of the file
+        try:
+            root = get_root(filepath)
+        except:
+            print("Quitting. Not a valid sgf file.")
             continue
-        if not (isAlphaGoSelfPlay or valid_root(root)):
-            print("Quitting. Not a valid root.")
+
+        # Check that the game is valid
+        if not (isAlphaGoSelfPlay or is_go(root)):
+            print("Quitting. Game not identified as Go.")
             continue
+        if not (isAlphaGoSelfPlay or has_multiple_moves(root)):
+            print("Quitting. Game has fewer than two moves.")
+            continue
+        print("Root is valid.")
 
         game_df = process_game(root)
         game_df["Game"] = filename.strip()
         dfs.append(game_df)
         count += 1
 
-        if count > 1000:
-            break
 
     return pd.concat(dfs, ignore_index=True, axis=0)
 

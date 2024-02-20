@@ -1,18 +1,5 @@
 from sgfmill import sgf
-
-_ALPHA = 'ABCDEFGHJKLMNOPQRST' #excludes 'i'
-
-def sgf_to_gtp(sgf_vertex):
-    if sgf_vertex:
-        return _ALPHA[sgf_vertex[1]] + str(sgf_vertex[0] + 1)
-    else:
-        return "pass"
-
-def gtp_to_sgf(gtp_vertex):
-    if gtp_vertex == "pass":
-        return None
-    else:
-        return (int(gtp_vertex[1:])-1, _ALPHA.index(gtp_vertex[0]))
+from sgfmill import common
 
 # Given a file name, create an Sgf_game object and return the root
 def get_root(filename):
@@ -126,11 +113,12 @@ def get_game_result(root):
 
 def main():
     # Testing
-    filename = "./test_sgf/byoyomi-HA4PO.sgf"
-    root = get_root(filename)
-    print(which_game(root))
-    print(is_go(root))
-    print(has_multiple_moves(root))
+    # filename = "./test_sgf/byoyomi-HA4PO.sgf"
+    # root = get_root(filename)
+    # print(which_game(root))
+    # print(is_go(root))
+    # print(has_multiple_moves(root))
+
 
 if __name__ == "__main__":
     main()

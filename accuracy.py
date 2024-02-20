@@ -1,5 +1,6 @@
-from sgfmillplus import get_root, sgf_to_gtp, gtp_to_sgf, is_go, has_multiple_moves, get_player_names, get_player_ranks
+from sgfmillplus import get_root, is_go, has_multiple_moves, get_player_names, get_player_ranks
 from sgfmillplus import get_time_system, get_overtime_system, get_game_result
+from sgfmill import common
 import os
 import subprocess
 import pandas as pd
@@ -145,7 +146,7 @@ def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
 
     while True:
         color, sgf_vertex = curr.get_move()
-        gtp_vertex = sgf_to_gtp(sgf_vertex)
+        gtp_vertex = common.format_vertex(sgf_vertex)
 
         moveO = MoveInfo(count,
                          color,
@@ -159,7 +160,7 @@ def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
                          gameResult = game_result
                          )
 
-        moveO.prev_gtp_vertex = sgf_to_gtp(prev_sgf_vertex)
+        moveO.prev_gtp_vertex = common.format_vertex(prev_sgf_vertex)
         if prev_sgf_vertex and sgf_vertex:
             moveO.played_dx = int(abs(sgf_vertex[1]-prev_sgf_vertex[1]))
             moveO.played_dy = int(abs(sgf_vertex[0]-prev_sgf_vertex[0]))
@@ -199,8 +200,8 @@ def readOutput(allMovesL, outputF):
             index += 1
 
 def addDistancesToMoveO(moveO):
-    bestMoveSGF = gtp_to_sgf(moveO.bestMove) #best move in this position
-    prevVertexSGF = gtp_to_sgf(moveO.prev_gtp_vertex)
+    bestMoveSGF = common.move_from_vertex(moveO.bestMove, 19) #best move in this position
+    prevVertexSGF = common.move_from_vertex(moveO.prev_gtp_vertex, 19)
     if bestMoveSGF and prevVertexSGF:
         moveO.best_dx = int(abs(bestMoveSGF[1] - prevVertexSGF[1]))
         moveO.best_dy = int(abs(bestMoveSGF[0] - prevVertexSGF[0]))
