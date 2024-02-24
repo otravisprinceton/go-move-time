@@ -112,7 +112,7 @@ def handle_handicap(root, curr):
         handicap = 0
     return handicap, curr
 
-def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
+def get_katago_input(root, filepath, data_folder, allMovesL, whiteIsBot, blackIsBot):
     kata_list = []
     curr = root[0]
 
@@ -124,7 +124,7 @@ def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
         return False
     
     # Command: start katago, load file past handicap
-    kata_list.append(" ".join(["loadsgf", filepath, str(handicap + 1)]))
+    kata_list.append(" ".join(["loadsgf", os.path.join(data_folder, filepath), str(handicap + 1)]))
     kata_list.append("kata-time_settings none")
 
     # track move count
@@ -172,7 +172,7 @@ def get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot):
         else:
             moveO.analyzed = True
             kata_list.append("clear_cache")
-            kata_list.append("kata-genmove_analyze " + color + " maxmoves 1")
+            kata_list.append("kata-genmove_analyze " + color + " maxmoves 3")
             kata_list.append("undo")
     
         allMovesL.append(moveO)
@@ -233,7 +233,7 @@ def main_helper(filepath, data_folder, dfs):
         print("Quitting. Found two bots.")
         return
     
-    katago_input = get_katago_input(root, filepath, allMovesL, whiteIsBot, blackIsBot)
+    katago_input = get_katago_input(root, filepath, data_folder, allMovesL, whiteIsBot, blackIsBot)
     if not katago_input:
         print("Quitting. Issue generating katago input.")
         return

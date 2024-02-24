@@ -118,6 +118,7 @@ def main():
     # print(which_game(root))
     # print(is_go(root))
     # print(has_multiple_moves(root))
+    print("hi")
 
 
 if __name__ == "__main__":
