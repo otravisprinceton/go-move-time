@@ -126,7 +126,6 @@ def get_katago_input(root, filepath, data_folder, allMovesL, whiteIsBot, blackIs
     # Command: start katago, load file past handicap
     kata_list.append(" ".join(["loadsgf", os.path.join(data_folder, filepath), str(handicap + 1)]))
     kata_list.append("kata-time_settings none")
-    kata_list.append("showboard")
 
     # track move count
     count = 1
@@ -245,10 +244,10 @@ def main_helper(filepath, data_folder, dfs):
     # output_filepath = os.path.normpath(os.path.join(data_folder, "../localtmpout/", filepath[7:-4] + "-out.txt"))
 
     # DELLA
-    # output_filepath = data_folder[:-7] + "OutputAccuracyFeb13-24/" + filepath[:-4] + "-acc.txt"
+    output_filepath = data_folder[:-7] + "OutputAccuracyFeb24-24/" + filepath[:-4] + "-acc.txt"
 
     # Testing
-    output_filepath = "/scratch/gpfs/otravis/tmp_manual_test_out.txt"
+    # output_filepath = "/scratch/gpfs/otravis/tmp_manual_test_out.txt"
 
     print("Saving to " + str(output_filepath))
     print("Running katago.")
@@ -271,7 +270,7 @@ def main_helper(filepath, data_folder, dfs):
 def main():
     dfs = []
 
-    is_array_job = False
+    is_array_job = True
     on_cluster = True
 
     if is_array_job:
@@ -287,19 +286,18 @@ def main():
     with open(os.path.join(data_folder, "gamesList.txt"), "r") as gamesList:
         filenames = gamesList.readlines()
 
-    # for i in range(len(filenames)):
-    #     if i % NUMJOBS == job_idx or job_idx == -1:
-    #         main_helper(filenames[i].strip(), data_folder, dfs)
+    for i in range(len(filenames)):
+        if i % NUMJOBS == job_idx or job_idx == -1:
+            main_helper(filenames[i].strip(), data_folder, dfs)
         
-    main_helper("201711/20171127IAwhite-qwest.sgf", data_folder, dfs)
-
+    # main_helper("201711/20171127IAwhite-qwest.sgf", data_folder, dfs)
     # main_helper("test_weird_passes.sgf", data_folder, dfs)
 
     # Della
-    # pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/tmp_accuracy-{job_idx}.csv')
+    pd.concat(dfs, ignore_index=True).to_csv(f'/scratch/gpfs/otravis/accuracy-{job_idx}.csv')
 
     # Test
-    pd.concat(dfs, ignore_index=True).to_csv('/scratch/gpfs/otravis/tmp_manual_test_out.csv')
+    # pd.concat(dfs, ignore_index=True).to_csv('/scratch/gpfs/otravis/tmp_manual_test_out.csv')
 
     # Local
     # pd.concat(dfs, ignore_index=True).to_csv(f'/Users/owentravis/Documents/IW/go-move-time/tmp-out.csv')
