@@ -126,6 +126,7 @@ def get_katago_input(root, filepath, data_folder, allMovesL, whiteIsBot, blackIs
     # Command: start katago, load file past handicap
     kata_list.append(" ".join(["loadsgf", os.path.join(data_folder, filepath), str(handicap + 1)]))
     kata_list.append("kata-time_settings none")
+    kata_list.append("showboard")
 
     # track move count
     count = 1
