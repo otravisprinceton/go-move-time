@@ -290,7 +290,7 @@ def main():
     #     if i % NUMJOBS == job_idx or job_idx == -1:
     #         main_helper(filenames[i].strip(), data_folder, dfs)
         
-    main_helper(filenames[0].strip(), data_folder, dfs)
+    main_helper("201711/20171127IAwhite-qwest.sgf", data_folder, dfs)
 
     # main_helper("test_weird_passes.sgf", data_folder, dfs)
 
