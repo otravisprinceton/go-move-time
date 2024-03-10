@@ -3,37 +3,15 @@
 # Calculate the average distance between moves
 ###---------------------------------------------------------------------
 from sgfmillplus import get_root, is_go, has_multiple_moves, get_player_names, get_player_ranks
+from sgfmillplus import playernames_contain_substrings
+from sgfmill import common
 import numpy as np
 import os
 import random
 import pandas as pd
 
-
 BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
 "neural", "sgmdb", "alphacent1", "dcnn", "golois", "bot", "tw001", "pachipachi", "alphago"}
-
-def get_bot_status(root):
-    bot_status = {"b":False, "w":False}
-
-    if root.has_property("PB"):
-        pb = root.get("PB").lower()
-        for partial in BOT_PARTIALS:
-            if partial in pb:
-                bot_status["b"] = True
-                break
-    else:
-        bot_status["b"] = None
-    
-    if root.has_property("PW"):
-        pw = root.get("PW").lower()
-        for partial in BOT_PARTIALS:
-            if partial in pw:
-                bot_status["w"] = True
-                break
-    else:
-        bot_status["w"] = None
-
-    return bot_status
 
 # Advance past the handicap moves
 def skipHandicap(root):
@@ -49,54 +27,58 @@ def skipHandicap(root):
             return None
     return curr
 
-# For a single game, given the root, get the average distance between
-# moves
+
 def process_game(root):
     ranks = get_player_ranks(root)
     names = get_player_names(root)
-    bot_status = get_bot_status(root)
+    bot_status = playernames_contain_substrings(root, BOT_PARTIALS)
 
     rows = []
 
     moveNumber = 1
-    prev_coord = None
+    prev_sgf_vertex = None
 
     # Skip past the handicap moves, if they are played out
     curr = skipHandicap(root)
     if not curr:
-        return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Name", "Rank", "isBot", "Row", "Col", "Dist"])
+        return pd.DataFrame(rows, columns=["num", "color", "playerName", "playerRank", "isBot", "gtp_vertex", "played_dx", "played_dy", "prev_gtp_vertex"])
 
     while True:
-        color, coord = curr.get_move()
-        if coord:
-            coord_toPrint = coord
-            if prev_coord:
-                dist = abs(coord[0]-prev_coord[0]) + abs(coord[1]-prev_coord[1])
+        color, sgf_vertex = curr.get_move()
+        if sgf_vertex:
+            if prev_sgf_vertex:
+                played_dx = int(abs(sgf_vertex[1]-prev_sgf_vertex[1]))
+                played_dy = int(abs(sgf_vertex[0]-prev_sgf_vertex[0]))
             else:
-                dist = None
+                played_dx = None
+                played_dy = None
         else:
-            coord_toPrint = (None, None)
-            dist = None
+            played_dx = None
+            played_dy = None
         row = [moveNumber,
                color,
                names[color],
                ranks[color],
                bot_status[color],
-               coord_toPrint[0],
-               coord_toPrint[1],
-               dist]
+               common.format_vertex(sgf_vertex),
+               played_dx,
+               played_dy,
+               common.format_vertex(prev_sgf_vertex)]
         rows.append(row)
 
         # Exit or advance the loop
         if len(curr) == 0:
             break
-        prev_coord = coord
+
+        if sgf_vertex:
+            prev_sgf_vertex = sgf_vertex
         curr = curr[0]
         moveNumber += 1
         # if moveNumber > 400:
         #     raise Exception()
 
-    return pd.DataFrame(rows, columns=["MoveNum", "Clr", "Name", "Rank", "isBot", "Row", "Col", "Dist"])
+    rows[0][-1] = None
+    return pd.DataFrame(rows, columns=["num", "color", "playerName", "playerRank", "isBot", "gtp_vertex", "played_dx", "played_dy", "prev_gtp_vertex"])
 
 
 
@@ -126,7 +108,7 @@ def process_all_games(data_folder, filenames, isAlphaGoSelfPlay=False):
         print("Root is valid.")
 
         game_df = process_game(root)
-        game_df["Game"] = filename.strip()
+        game_df["gameFile"] = filename.strip()
         dfs.append(game_df)
         count += 1
 
@@ -153,7 +135,7 @@ def main():
     human_df["isAlphaGo"] = 0
 
     res = pd.concat([ag_df, human_df], ignore_index=True, axis=0)
-    res.to_csv("distance_output_handicap_handled.csv", index=False)
+    res.to_csv("tmp-69.csv", index=False)
 
 if __name__=="__main__":
     main()

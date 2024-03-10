@@ -111,15 +111,33 @@ def get_game_result(root):
         return root.get("RE")
     return None
 
+# Given a list of substrings, return whether each player name contains
+# at least one of the substrings (not case-sensitive)
+def playernames_contain_substrings(root, substrings):
+    res = {
+        "b": None,
+        "w": None
+    }
+    if root.has_property("PB"):
+        pb = root.get("PB").lower()
+        res["b"] = any((s in pb) for s in substrings)
+    if root.has_property("PW"):
+        pw = root.get("PW").lower()
+        res["w"] = any((s in pw) for s in substrings)
+
+    return res
+
 def main():
     # Testing
-    # filename = "./test_sgf/byoyomi-HA4PO.sgf"
-    # root = get_root(filename)
+    filename = "./test_sgf/byoyomi-HA4PO.sgf"
+    root = get_root(filename)
+    print(root.get("PB"))
+    print(root.get("PW"))
+    print(playernames_contain_substrings(root, ["abc", "max", "lll"]))
     # print(which_game(root))
     # print(is_go(root))
     # print(has_multiple_moves(root))
     print("hi")
-
 
 if __name__ == "__main__":
     main()
