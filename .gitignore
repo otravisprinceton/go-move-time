@@ -10,3 +10,6 @@
 distance_output1.csv
 distance_output0.csv
 distance_output_handicap_handled.csv
+distance_output_new.csv
+distance_output_tygem.csv
+.DS_store

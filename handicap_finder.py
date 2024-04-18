@@ -186,9 +186,22 @@ def makeGameList():
                         except:
                             print(filepath)
 
+def makeGameListAlphaGoTygem():
+    pathname = '/Users/owentravis/Downloads/AlphaGoSelfPlay/tygemfox'
+    with open("/Users/owentravis/Downloads/AlphaGoSelfPlay/agGamesList-tygem.txt", "x") as outputFile:
+        for filename in os.listdir(pathname):
+            filepath = os.path.join(pathname, filename)
+            if os.path.isfile(filepath):
+                with open(filepath, "rb") as f:
+                    try:
+                        game = sgf.Sgf_game.from_bytes(f.read())
+                        outputFile.write(filename + "\n")
+                    except:
+                        print(filepath)
+
 
 def main():
-    find_handicap()
+    makeGameListAlphaGoTygem()
 
 if __name__ == "__main__":
     main()

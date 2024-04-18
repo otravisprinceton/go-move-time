@@ -1,19 +1,31 @@
+###---------------------------------------------------------------------
+# accuracy.py
+# Owen Travis
+# For reading SGF files, identifying suspected robots, spawning sub-
+# processes running KataGo, and determining the optimal move in each
+# position. The core logic of this code is rooted in files written for
+# our previous work (see Travis et al. 2023).
+###---------------------------------------------------------------------
+
+# Import functions from Sgfmill and Sgfmillplus
 from sgfmillplus import get_root, is_go, has_multiple_moves, get_player_names, get_player_ranks
 from sgfmillplus import get_time_system, get_overtime_system, get_game_result
 from sgfmill import common
+
+# Import libraries
 import os
 import subprocess
 import pandas as pd
 
+# Number of slurm jobs to run
 NUMJOBS = 300
 
-
-# Local
+# If testing locally:
 # KATAGO = "katago"
 # MODEL = "/usr/local/Cellar/katago/1.13.2/share/katago/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
 # CFG_FILE = "./gtp_high.cfg"
 
-# Della
+# If running on Della at Princeton Research Computing:
 KATAGO = "/home/otravis/software/KataGoOpenCL/katago"
 MODEL = "/home/otravis/software/g170-b30c320x2-s4824661760-d1229536699.bin.gz" #30
 CFG_FILE = "/home/otravis/go-move-time/gtp_high.cfg"

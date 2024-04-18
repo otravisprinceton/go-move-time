@@ -1,23 +1,31 @@
 ###---------------------------------------------------------------------
-# First analysis
-# Calculate the average distance between moves
+# distance.py
+# Owen Travis
+# For reading SGF files, identifying suspected robots, and calculating
+# the distance between successive moves
 ###---------------------------------------------------------------------
+
+# Import functions from Sgfmill and Sgfmillplus
 from sgfmillplus import get_root, is_go, has_multiple_moves, get_player_names, get_player_ranks
 from sgfmillplus import playernames_contain_substrings
 from sgfmill import common
+# Import libraries
 import numpy as np
 import os
 import random
 import pandas as pd
 
+# List of substrings for identifying robots. Additional robots are later
+# flagged in data processing (see: distance.rmd).
 BOT_PARTIALS = {"kata", "zen", "petgo", "gnugo", "gomancer", "nexus",
 "neural", "sgmdb", "alphacent1", "dcnn", "golois", "bot", "tw001", "pachipachi", "alphago"}
 
-# Advance past the handicap moves
+# Advance past the handicap stones (handicap stones may or may not be
+# recorded as actual moves in the SGF file).
 def skipHandicap(root):
     curr = root[0]
     # If there is a handicap and the first two moves were played by the
-    # same color...
+    # same color, then we must advance the game past these moves.
     if root.has_property("HA") and curr.get_move()[0] == curr[0].get_move()[0]:
         handicap = root.get("HA")
         try:
@@ -27,7 +35,9 @@ def skipHandicap(root):
             return None
     return curr
 
-
+# Given the root node of an Sgf_game object, return a data frame
+# with information about each move, including the distance to the
+# previous move.
 def process_game(root):
     ranks = get_player_ranks(root)
     names = get_player_names(root)
@@ -45,13 +55,9 @@ def process_game(root):
 
     while True:
         color, sgf_vertex = curr.get_move()
-        if sgf_vertex:
-            if prev_sgf_vertex:
+        if sgf_vertex and prev_sgf_vertex:
                 played_dx = int(abs(sgf_vertex[1]-prev_sgf_vertex[1]))
                 played_dy = int(abs(sgf_vertex[0]-prev_sgf_vertex[0]))
-            else:
-                played_dx = None
-                played_dy = None
         else:
             played_dx = None
             played_dy = None
@@ -66,22 +72,27 @@ def process_game(root):
                common.format_vertex(prev_sgf_vertex)]
         rows.append(row)
 
-        # Exit or advance the loop
+        # Exit the loop if there are no more moves in the game
         if len(curr) == 0:
             break
 
+        # If the current move was not a "pass", update the previous move
         if sgf_vertex:
             prev_sgf_vertex = sgf_vertex
+        
+        # Advance the loop
         curr = curr[0]
         moveNumber += 1
-        # if moveNumber > 400:
-        #     raise Exception()
 
+    # Edge case: the first move of the game
     rows[0][-1] = None
+
     return pd.DataFrame(rows, columns=["num", "color", "playerName", "playerRank", "isBot", "gtp_vertex", "played_dx", "played_dy", "prev_gtp_vertex"])
 
 
-
+# Given a data folder and filenames, call process_game() for each game.
+# If isAlphaGoSelfPlay, skip checking if the game is valid.
+# Return one concatenated data frame for all moves in all games.
 def process_all_games(data_folder, filenames, isAlphaGoSelfPlay=False):
     dfs = []
     count = 0
@@ -112,7 +123,6 @@ def process_all_games(data_folder, filenames, isAlphaGoSelfPlay=False):
         dfs.append(game_df)
         count += 1
 
-
     return pd.concat(dfs, ignore_index=True, axis=0)
 
 def main():
@@ -135,7 +145,7 @@ def main():
     human_df["isAlphaGo"] = 0
 
     res = pd.concat([ag_df, human_df], ignore_index=True, axis=0)
-    res.to_csv("tmp-69.csv", index=False)
+    res.to_csv("distance_output_new.csv", index=False)
 
 if __name__=="__main__":
     main()
